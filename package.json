@@ -1,0 +1,19 @@
+{
+  "name": "pterodactyl_minecraft_versions_manager",
+  "version": "0.0.2",
+  "description": "Order Versions, automaticly get latest version and import/export of DB",
+  "main": "MinecraftVersions.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Pterodactyl",
+    "Addon"
+  ],
+  "author": "BolverBlitz",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "mysql": "^2.18.1"
+  }
+}
