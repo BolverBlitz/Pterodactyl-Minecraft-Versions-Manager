@@ -39,11 +39,39 @@ let GetAllGroupIDs = function() {
 	})
 }
 
-let GetVersionsOfGroup = function( id ) {
+let GetAllVersionsOfGroup = function( id ) {
 	return new Promise(function(resolve, reject) {
 		db.getConnection(function(err, connection){
 			if(err) reject(err);
 			var sqlcmd = `SELECT * FROM versions where group_id = '${id}';`
+			connection.query(sqlcmd, function(err, rows, fields) {
+				if(err) reject(err);
+				connection.release();
+				resolve(rows);
+			});
+		})
+	})
+}
+
+let ClearAllVersionsOfGroup = function( id ) {
+	return new Promise(function(resolve, reject) {
+		db.getConnection(function(err, connection){
+			if(err) reject(err);
+			var sqlcmd = `DELETE FROM versions where group_id = '${id}';`
+			connection.query(sqlcmd, function(err, rows, fields) {
+				if(err) reject(err);
+				connection.release();
+				resolve(rows);
+			});
+		})
+	})
+}
+
+let ClearAllVersionsOfGroupByID = function( id ) {
+	return new Promise(function(resolve, reject) {
+		db.getConnection(function(err, connection){
+			if(err) reject(err);
+			var sqlcmd = `DELETE FROM versions where group_id = '${id}';`
 			connection.query(sqlcmd, function(err, rows, fields) {
 				if(err) reject(err);
 				connection.release();
@@ -102,5 +130,24 @@ function SortAllVersions(){
     }).catch(error => console.log(error));
 }
 
+function CleanAllVersionsOfGroupName(SortAll){
+    SortAll.map(element => {
+        GetGroupID(element).then(function(id) {
+            ClearAllVersionsOfGroup(id[0].id).then(function(rows) {
+                console.log(rows)
+            }).catch(error => console.log(error));
+        }).catch(error => console.log(error));
+    })
+}
+
+function CleanAllVersionsOfGroupID(ID){
+    ClearAllVersionsOfGroupByID(ID).then(function(rows) {
+        console.log(rows)
+    }).catch(error => console.log(error));
+}
+
 //SortVersions(["Paper"]); //Write here all names you wanna sort from https://panel.ebg.pw/admin/version
-SortAllVersions();
+//SortAllVersions();
+
+//CleanAllVersionsOfGroupName(["Paper"]); //Write here all names you wanna delete all versions from https://panel.ebg.pw/admin/version
+//CleanAllVersionsOfGroupID(3);
