@@ -1,119 +1,28 @@
 require('dotenv').config();
 
-const mysql = require('mysql');
+const SQL = require('./lib/SQL')
+const request = require('request');
+const fs = require('fs');
 
-var db = mysql.createPool({
-	connectionLimit : 100,
-	host: process.env.DB_HOST,
-	user: process.env.DB_USERNAME,
-	password: process.env.DB_PASSWORD,
-	database: process.env.DB_DATABASE,
-	charset : 'utf8mb4_bin'
-});
+const Git_URI = "https://raw.githubusercontent.com/BolverBlitz/Pterodactyl-Minecraft-Versions-Manager/main/Minecraft_Versions.json"
 
-let GetGroupID = function( name ) {
+let UpdateVersionsFromGit = function(URI) {
 	return new Promise(function(resolve, reject) {
-		db.getConnection(function(err, connection){
-			if(err) reject(err);
-			var sqlcmd = `SELECT id FROM version_groups where name LIKE '%${name}%';`
-			connection.query(sqlcmd, function(err, rows, fields) {
-				if(err) reject(err);
-				connection.release();
-				resolve(rows);
-			});
-		})
-	})
-}
-
-let GetAllGroupIDs = function() {
-	return new Promise(function(resolve, reject) {
-		db.getConnection(function(err, connection){
-			if(err) reject(err);
-			var sqlcmd = `SELECT id FROM version_groups;`
-			connection.query(sqlcmd, function(err, rows, fields) {
-				if(err) reject(err);
-				connection.release();
-				resolve(rows);
-			});
-		})
-	})
-}
-
-let GetAllVersionsOfGroup = function( id ) {
-	return new Promise(function(resolve, reject) {
-		db.getConnection(function(err, connection){
-			if(err) reject(err);
-			var sqlcmd = `SELECT * FROM versions where group_id = '${id}';`
-			connection.query(sqlcmd, function(err, rows, fields) {
-				if(err) reject(err);
-				connection.release();
-				resolve(rows);
-			});
-		})
-	})
-}
-
-let ClearAllVersionsOfGroup = function( id ) {
-	return new Promise(function(resolve, reject) {
-		db.getConnection(function(err, connection){
-			if(err) reject(err);
-			var sqlcmd = `DELETE FROM versions where group_id = '${id}';`
-			connection.query(sqlcmd, function(err, rows, fields) {
-				if(err) reject(err);
-				connection.release();
-				resolve(rows);
-			});
-		})
-	})
-}
-
-let ClearAllVersionsOfGroupByID = function( id ) {
-	return new Promise(function(resolve, reject) {
-		db.getConnection(function(err, connection){
-			if(err) reject(err);
-			var sqlcmd = `DELETE FROM versions where group_id = '${id}';`
-			connection.query(sqlcmd, function(err, rows, fields) {
-				if(err) reject(err);
-				connection.release();
-				resolve(rows);
-			});
-		})
-	})
-}
-
-let SortVersionsOfGroup = function( id ) {
-	return new Promise(function(resolve, reject) {
-		db.getConnection(function(err, connection){
-			if(err) reject(err);
-            var sqlcmd = `SELECT name FROM versions where group_id = '${id}';`
-			connection.query(sqlcmd, function(err, rows, fields) {
-				if(err) reject(err);
-                connection.release();
-                var altrows = rows
-                rows.map(row => {
-                    row.sort = row.name.split("Paper ").join("")
-                });
-                rows.sort( (a, b) => a.sort.replace(/\d+/g, n => +n+100000 )
-                    .localeCompare(b.sort.replace(/\d+/g, n => +n+100000 )) );
-                
-                let Promises = [];
-                for(i = 0; i <= rows.length-1; i++) {
-                    Promises.push(connection.query(`UPDATE versions SET sort = '${rows.length-i}'  WHERE name = '${rows[i].name}';`));
-                    
-                };
-
-                Promise.all(Promises).then((values) => {
-                    resolve(`Done sorting ${id}`);
-                }).catch(error => console.log(error));
-            });
+		request(URI, { json: true }, (err, res, body) => {
+			if (err) { reject(err); }
+			var myJSON = JSON.stringify(body); 
+				fs.writeFile(`./Minecraft_Versions.json`, myJSON, (err) => {
+					if (err) resolve(err);
+					resolve(body)
+				});
 		});
 	});
 }
 
 function SortVersions(SortAll){
     SortAll.map(element => {
-        GetGroupID(element).then(function(id) {
-            SortVersionsOfGroup(id[0].id).then(function(rows) {
+        SQL.GetGroupID(element).then(function(id) {
+            SQL.SortVersionsOfGroup(id[0].id).then(function(rows) {
                 console.log(rows)
             }).catch(error => console.log(error));
         }).catch(error => console.log(error));
@@ -121,19 +30,19 @@ function SortVersions(SortAll){
 }
 
 function SortAllVersions(){
-    GetAllGroupIDs().then(function(ids) {
+    SQL.GetAllGroupIDs().then(function(ids) {
         ids.map(id => {
-            SortVersionsOfGroup(id.id).then(function(rows) {
+            SQL.SortVersionsOfGroup(id.id).then(function(rows) {
                 console.log(rows)
             }).catch(error => console.log(error));
         })
     }).catch(error => console.log(error));
 }
 
-function CleanAllVersionsOfGroupName(SortAll){
-    SortAll.map(element => {
-        GetGroupID(element).then(function(id) {
-            ClearAllVersionsOfGroup(id[0].id).then(function(rows) {
+function CleanAllVersionsOfGroupName(CleanAll){
+    CleanAll.map(element => {
+        SQL.GetGroupID(element).then(function(id) {
+            SQL.ClearAllVersionsOfGroup(id[0].id).then(function(rows) {
                 console.log(rows)
             }).catch(error => console.log(error));
         }).catch(error => console.log(error));
@@ -141,13 +50,26 @@ function CleanAllVersionsOfGroupName(SortAll){
 }
 
 function CleanAllVersionsOfGroupID(ID){
-    ClearAllVersionsOfGroupByID(ID).then(function(rows) {
+    SQL.ClearAllVersionsOfGroupByID(ID).then(function(rows) {
         console.log(rows)
     }).catch(error => console.log(error));
 }
 
+function CreateVersionsForGroupID(ID, Game ,Type, Filename){
+    SQL.InsertVersionsByGroupID(ID, Game, Type, Filename).then(function(rows) {
+        console.log(rows)
+    }).catch(error => console.log(error));
+}
 //SortVersions(["Paper"]); //Write here all names you wanna sort from https://panel.ebg.pw/admin/version
 //SortAllVersions();
 
 //CleanAllVersionsOfGroupName(["Paper"]); //Write here all names you wanna delete all versions from https://panel.ebg.pw/admin/version
 //CleanAllVersionsOfGroupID(3);
+
+/*
+UpdateVersionsFromGit(Git_URI).then(function(rows) {
+	console.log(rows)
+}).catch(error => console.log(error));
+*/
+
+CreateVersionsForGroupID(2, "Minecraft", "Paper", "server.jar")
