@@ -21,11 +21,17 @@ let UpdateVersionsFromGit = function(URI) {
 
 function SortVersions(SortAll){
     SortAll.map(element => {
-        SQL.GetGroupID(element).then(function(id) {
-            SQL.SortVersionsOfGroup(id[0].id).then(function(rows) {
-                console.log(rows)
-            }).catch(error => console.log(error));
-        }).catch(error => console.log(error));
+		if(element !== "Fix"){
+			SQL.GetGroupID(element).then(function(id) {
+				if(id.length !== 0){
+					SQL.SortVersionsOfGroup(id[0].id).then(function(rows) {
+						console.log(`${rows} (${element})`)
+					}).catch(error => console.log(error));
+				}else{
+					console.log(`${element} is no versions group`)
+				}
+			}).catch(error => console.log(error));
+		}
     })
 }
 
@@ -41,18 +47,25 @@ function SortAllVersions(){
 
 function CleanAllVersionsOfGroupName(CleanAll){
     CleanAll.map(element => {
-        SQL.GetGroupID(element).then(function(id) {
-            SQL.ClearAllVersionsOfGroup(id[0].id).then(function(rows) {
-                console.log(rows)
-            }).catch(error => console.log(error));
-        }).catch(error => console.log(error));
+		if(element !== "Fix"){
+			SQL.GetGroupID(element).then(function(id) {
+				if(id.length !== 0){
+					SQL.ClearAllVersionsOfGroup(id[0].id).then(function(rows) {
+						console.log(`Deleted ${rows.affectedRows} Versions from ${element}`)
+					}).catch(error => console.log(error));
+				}else{
+					console.log(`${element} is no versions group`)
+				}
+			}).catch(error => console.log(error));
+		}
     })
 }
 
 function CleanAllVersionsOfGroupID(ID){
+	console.log("s")
     SQL.ClearAllVersionsOfGroupByID(ID).then(function(rows) {
-        console.log(rows)
-    }).catch(error => console.log(error));
+        console.log(`Deleted ${rows.affectedRows} Versions from ${ID}`)
+	}).catch(error => console.log(error));
 }
 
 function CreateVersionsForGroupID(ID, Game ,Type, Filename){
@@ -66,10 +79,40 @@ function CreateVersionsForGroupID(ID, Game ,Type, Filename){
 //CleanAllVersionsOfGroupName(["Paper"]); //Write here all names you wanna delete all versions from https://panel.ebg.pw/admin/version
 //CleanAllVersionsOfGroupID(3);
 
-/*
-UpdateVersionsFromGit(Git_URI).then(function(rows) {
-	console.log(rows)
-}).catch(error => console.log(error));
-*/
+//CreateVersionsForGroupID(2, "Minecraft", "Paper", "server.jar")
 
-CreateVersionsForGroupID(2, "Minecraft", "Paper", "server.jar")
+process.argv.forEach(function (val, index, array) {
+	if(val === "-update" || val === "-u"){
+		UpdateVersionsFromGit(Git_URI).then(function(rows) {
+			console.log("Updated Versions from git")
+		}).catch(error => console.log(error));
+	}
+	if(val === "-help" || val === "-h"){
+		console.log("-u | -update: Will update Versions from git\n")
+		console.log("-h | -help: Will show this help\n")
+		console.log("-s | -sort <all|Name of Group>: Will sort the parameter in pterodactyl Example: node MinecraftVersions.js -s Paper, Vanilla\n")
+		console.log("-c | -clean <ID|Name of Group>: Will delete all versions of that group Example: node MinecraftVersions.js -c 2\n")
+		console.log("-C | -Create <ID> <Game> <Type> <Filename>: Will inport all latest versions of that game Example: node MinecraftVersions.js -C 2 Minecraft Paper server.jar\n")
+	}
+	if(val === "-sort" || val === "-s"){
+		if(process.argv[index+1] === "all" || process.argv[index+1] === "a"){
+			SortAllVersions();
+		}else{
+			let Temp = `Fix,${process.argv[index+1]}`
+			let arr = Temp.split(",")
+			SortVersions(arr);
+		}
+	}
+	if(val === "-clean" || val === "-c"){
+		if(!isNaN(process.argv[index+1])){
+			CleanAllVersionsOfGroupID(process.argv[index+1])
+		}else{
+			let Temp = `Fix,${process.argv[index+1]}`
+			let arr = Temp.split(",")
+			CleanAllVersionsOfGroupName(arr);
+		}
+	}
+	if(val === "-Create" || val === "-C"){
+		CreateVersionsForGroupID(process.argv[index+1], process.argv[index+2], process.argv[index+3], process.argv[index+4])
+	}
+  });
