@@ -90,7 +90,7 @@ process.argv.forEach(function (val, index, array) {
 	if(val === "-help" || val === "-h"){
 		console.log("-u | -update: Will update Versions from git\n")
 		console.log("-h | -help: Will show this help\n")
-		console.log("-s | -sort <all|Name of Group>: Will sort the parameter in pterodactyl Example: node MinecraftVersions.js -s Paper, Vanilla\n")
+		console.log("-s | -sort <all|Name of Group>: Will sort the parameter in pterodactyl Example: node MinecraftVersions.js -s Paper, Vanilla, Mohist\n")
 		console.log("-c | -clean <ID|Name of Group>: Will delete all versions of that group Example: node MinecraftVersions.js -c 2\n")
 		console.log("-C | -Create <ID> <Game> <Type> <Filename>: Will inport all latest versions of that game Example: node MinecraftVersions.js -C 2 Minecraft Paper server.jar\n")
 	}

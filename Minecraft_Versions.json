@@ -32,6 +32,16 @@
         ],
         "CatServer": [
             {"Version": "1.12.2", "Download_URL": "https://github.com/Luohuayu/CatServer/releases/download/21.01.01/CatServer-2a9163f-universal.jar"}
+        ],
+        "Mohist": [
+            {"Version": "1.7.10", "Download_URL": "https://mohistmc.com/builds/1.7.10/Mohist-1.7.10-27-server.jar"},
+            {"Version": "1.12.2", "Download_URL": "https://mohistmc.com/builds/1.12.2/mohist-1.12.2-192-server.jar"},
+            {"Version": "1.16.5", "Download_URL": "https://mohistmc.com/builds/1.16.5/mohist-1.16.5-370-server.jar"}
         ]
-    }
+    },
+    "Mohist": [
+        {"Version": "1.7.10", "Download_URL": "https://mohistmc.com/api/1.7.10/latest"},
+        {"Version": "1.12.2", "Download_URL": "https://mohistmc.com/api/1.12.2/latest"},
+        {"Version": "1.16.5", "Download_URL": "https://mohistmc.com/api/1.16.5/latest"}
+    ]
 }
