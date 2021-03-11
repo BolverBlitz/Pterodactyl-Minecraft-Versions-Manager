@@ -37,6 +37,15 @@
             {"Version": "1.7.10", "Download_URL": "https://mohistmc.com/builds/1.7.10/Mohist-1.7.10-27-server.jar"},
             {"Version": "1.12.2", "Download_URL": "https://mohistmc.com/builds/1.12.2/mohist-1.12.2-192-server.jar"},
             {"Version": "1.16.5", "Download_URL": "https://mohistmc.com/builds/1.16.5/mohist-1.16.5-370-server.jar"}
+        ],
+        "Purpur": [
+            {"Version": "1.16.5", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.16.5/latest/download"},
+            {"Version": "1.16.4", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.16.4/latest/download"},
+            {"Version": "1.16.3", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.16.3/latest/download"},
+            {"Version": "1.16.2", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.16.2/latest/download"},
+            {"Version": "1.16.1", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.16.1/latest/download"},
+            {"Version": "1.15.2", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.15.2/latest/download"},
+            {"Version": "1.14.4", "Download_URL": "https://purpur.pl3x.net/api/v1/purpur/1.14.4/latest/download"}
         ]
     },
     "Mohist": [
